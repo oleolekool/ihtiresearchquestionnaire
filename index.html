@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHTI Research Questionnaire 2025</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f4f6f9;color:#1a1a2e;min-height:100vh}
+
+  /* HEADER */
+  .site-header{background:#1F3A5F;color:#fff;padding:16px 24px}
+  .site-header h1{font-size:15px;font-weight:600;line-height:1.4}
+  .site-header p{font-size:12px;opacity:.75;margin-top:4px}
+
+  /* PROGRESS */
+  .prog-wrap{background:#fff;border-bottom:1px solid #e0e6ef;padding:12px 24px}
+  .prog-top{display:flex;justify-content:space-between;margin-bottom:6px}
+  .prog-top span{font-size:12px;color:#555}
+  .prog-bar{height:5px;background:#dde4ef;border-radius:3px;overflow:hidden}
+  .prog-fill{height:100%;background:#1F3A5F;border-radius:3px;transition:width .3s}
+
+  /* MAIN */
+  .container{max-width:720px;margin:0 auto;padding:24px 16px}
+  .screen{display:none}
+  .screen.active{display:block}
+
+  /* CARDS */
+  .section-label{display:inline-block;background:#e8f0fe;color:#1F3A5F;font-size:11px;font-weight:600;padding:3px 12px;border-radius:20px;letter-spacing:.4px;margin-bottom:10px;text-transform:uppercase}
+  .screen-title{font-size:20px;font-weight:600;color:#1a1a2e;margin-bottom:6px}
+  .screen-intro{font-size:13px;color:#555;margin-bottom:20px;line-height:1.7}
+  .card{background:#fff;border:1px solid #e0e6ef;border-radius:10px;padding:16px 20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .q-text{font-size:14px;font-weight:600;color:#1a1a2e;margin-bottom:8px;line-height:1.5}
+  .q-hint{font-size:12px;color:#888;margin-bottom:8px;font-style:italic}
+
+  /* OPTIONS */
+  .opt{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;margin-bottom:4px;transition:background .1s;border:1px solid transparent}
+  .opt:hover{background:#f0f4fb;border-color:#c8d6ef}
+  .opt input{accent-color:#1F3A5F;width:16px;height:16px;flex-shrink:0;cursor:pointer}
+  .opt label{font-size:13px;color:#1a1a2e;cursor:pointer;line-height:1.4}
+  .opt.selected{background:#edf3ff;border-color:#1F3A5F}
+
+  /* LIKERT */
+  .likert-scroll{overflow-x:auto;border-radius:8px;border:1px solid #e0e6ef}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  thead{background:#1F3A5F;color:#fff}
+  thead th{padding:10px 8px;text-align:center;font-weight:500;white-space:nowrap}
+  thead th.stmt{text-align:left;padding-left:14px;min-width:260px}
+  tbody tr:nth-child(even){background:#f8fafd}
+  tbody td{padding:10px 8px;text-align:center;border-bottom:1px solid #e8edf5;vertical-align:middle}
+  tbody td.stmt{text-align:left;padding-left:14px;font-size:12px;color:#1a1a2e;line-height:1.5;padding-right:12px}
+  tbody tr:last-child td{border-bottom:none}
+  table input[type=radio]{accent-color:#1F3A5F;width:16px;height:16px;cursor:pointer}
+
+  /* TEXTAREA */
+  textarea{width:100%;border:1px solid #dde4ef;border-radius:8px;padding:12px;font-size:13px;font-family:inherit;color:#1a1a2e;background:#fafbfe;resize:vertical;min-height:100px;margin-top:6px;transition:border .15s}
+  textarea:focus{outline:none;border-color:#1F3A5F;background:#fff}
+
+  /* CONSENT */
+  .consent-panel{background:#f0f4fb;border:1px solid #c8d6ef;border-radius:10px;padding:16px 20px;margin:14px 0;font-size:13px;color:#333;line-height:1.8}
+  .consent-panel li{margin-left:18px;margin-bottom:4px}
+  .consent-check{display:flex;align-items:flex-start;gap:10px;margin-top:14px;padding:12px;background:#fff;border:1px solid #dde4ef;border-radius:8px}
+  .consent-check input{accent-color:#1F3A5F;margin-top:2px;width:16px;height:16px;flex-shrink:0;cursor:pointer}
+  .consent-check label{font-size:13px;color:#1a1a2e;cursor:pointer;line-height:1.5}
+
+  /* NAV */
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:20px;border-top:1px solid #e0e6ef}
+  .btn{padding:10px 24px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none}
+  .btn-back{background:#fff;border:1px solid #dde4ef;color:#555}
+  .btn-back:hover{background:#f4f6f9}
+  .btn-next{background:#1F3A5F;color:#fff}
+  .btn-next:hover{background:#2E86AB}
+  .btn-next:disabled{background:#aab8cc;cursor:not-allowed}
+
+  /* ERROR */
+  .err-msg{display:none;background:#fff0f0;border:1px solid #fcc;border-radius:8px;padding:10px 14px;font-size:13px;color:#c0392b;margin-top:12px}
+  .err-msg.show{display:block}
+
+  /* THANK YOU */
+  .ty-wrap{text-align:center;padding:40px 20px}
+  .ty-icon{width:64px;height:64px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px}
+  .ty-wrap h2{font-size:22px;font-weight:600;margin-bottom:8px}
+  .ty-wrap p{font-size:14px;color:#555;margin-bottom:6px;line-height:1.6}
+
+  /* DASHBOARD */
+  .dash-toggle{position:fixed;top:12px;right:16px;z-index:100}
+  .btn-dash{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-weight:500}
+  .btn-dash:hover{background:rgba(255,255,255,.25)}
+  .dashboard{display:none;position:fixed;top:0;right:0;width:360px;height:100vh;background:#fff;box-shadow:-4px 0 20px rgba(0,0,0,.12);z-index:200;overflow-y:auto}
+  .dashboard.open{display:block}
+  .dash-hdr{background:#1F3A5F;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+  .dash-hdr h3{font-size:14px;font-weight:600}
+  .dash-close{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1}
+  .dash-body{padding:16px}
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .stat-box{background:#f4f6f9;border-radius:8px;padding:12px;text-align:center}
+  .stat-n{font-size:24px;font-weight:700;color:#1F3A5F}
+  .stat-l{font-size:11px;color:#777;margin-top:2px;line-height:1.3}
+  .resp-card{background:#f8fafd;border:1px solid #e0e6ef;border-radius:8px;padding:10px 14px;margin-bottom:8px;font-size:12px;color:#444;line-height:1.7}
+  .resp-card strong{color:#1a1a2e}
+  .dash-section{font-size:12px;font-weight:600;color:#1F3A5F;margin:14px 0 8px;text-transform:uppercase;letter-spacing:.4px}
+  .btn-export{width:100%;padding:10px;background:#1F3A5F;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:10px}
+  .btn-export:hover{background:#2E86AB}
+  .btn-clear{width:100%;padding:8px;background:#fff;color:#c0392b;border:1px solid #fcc;border-radius:8px;font-size:12px;cursor:pointer}
+  .btn-clear:hover{background:#fff0f0}
+
+  @media(max-width:480px){
+    .container{padding:16px 12px}
+    .dashboard{width:100%}
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="site-header">
+  <h1>AI-Driven Mood Detection and Neurogastroenterological Food Recommendation in Hotel Dining</h1>
+  <p>Technology Acceptance Among Hospitality Students in Nairobi &nbsp;|&nbsp; IHTI 2025 &nbsp;|&nbsp; Brandis Kool</p>
+</div>
+
+<!-- RESEARCHER DASHBOARD TOGGLE -->
+<div class="dash-toggle">
+  <button class="btn-dash" onclick="openDash()">&#9776; Dashboard</button>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="prog-wrap">
+  <div class="prog-top">
+    <span id="prog-label">Participant Information</span>
+    <span id="prog-count">Step 1 of 7</span>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:14%"></div></div>
+</div>
+
+<!-- SCREENS -->
+<div class="container">
+
+  <!-- SCREEN 0: CONSENT -->
+  <div class="screen active" id="s0">
+    <div class="section-label">Participant Information &amp; Consent</div>
+    <h2 class="screen-title">Research Questionnaire</h2>
+    <p class="screen-intro">This study explores the awareness and perceptions of hospitality students regarding AI-driven mood detection and neurogastroenterological food recommendation in hotel dining. The questionnaire takes approximately 10 to 15 minutes to complete.</p>
+    <div class="consent-panel">
+      <strong>Before you begin, please note:</strong>
+      <ul style="margin-top:8px">
+        <li>Your participation is entirely voluntary. You may withdraw at any point without consequence.</li>
+        <li>Your responses are completely anonymous. No names or identifying information will be collected.</li>
+        <li>All data will be used exclusively for academic research purposes and stored securely.</li>
+        <li>This study has been authorised by the International Hotel and Tourism Institute (IHTI), Nairobi.</li>
+        <li>If you have any questions, contact the researcher: Brandis Kool, IHTI Nairobi.</li>
+      </ul>
+    </div>
+    <div class="consent-check">
+      <input type="checkbox" id="consent">
+      <label for="consent">I have read the information above, I am participating voluntarily, and I consent to my anonymous responses being used for this academic research.</label>
+    </div>
+    <div class="err-msg" id="err0">Please confirm your consent to continue.</div>
+  </div>
+
+  <!-- SCREEN 1: SECTION A -->
+  <div class="screen" id="s1">
+    <div class="section-label">Section A</div>
+    <h2 class="screen-title">Demographic Information</h2>
+    <p class="screen-intro">Please select the option that best describes you.</p>
+
+    <div class="card">
+      <div class="q-text">1. What programme are you currently enrolled in?</div>
+      <label class="opt" for="q1a"><input type="radio" name="q1" value="BTEC HND Hospitality Management" id="q1a"><span>BTEC HND Hospitality Management</span></label>
+      <label class="opt" for="q1b"><input type="radio" name="q1" value="BTEC Culinary Arts" id="q1b"><span>BTEC Culinary Arts</span></label>
+      <label class="opt" for="q1c"><input type="radio" name="q1" value="Other" id="q1c"><span>Other</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">2. What year of study are you in?</div>
+      <label class="opt" for="q2a"><input type="radio" name="q2" value="Year 1" id="q2a"><span>Year 1</span></label>
+      <label class="opt" for="q2b"><input type="radio" name="q2" value="Year 2" id="q2b"><span>Year 2</span></label>
+      <label class="opt" for="q2c"><input type="radio" name="q2" value="Other" id="q2c"><span>Other</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">3. What is your age range?</div>
+      <label class="opt" for="q3a"><input type="radio" name="q3" value="18 to 21 years" id="q3a"><span>18 to 21 years</span></label>
+      <label class="opt" for="q3b"><input type="radio" name="q3" value="22 to 25 years" id="q3b"><span>22 to 25 years</span></label>
+      <label class="opt" for="q3c"><input type="radio" name="q3" value="26 to 30 years" id="q3c"><span>26 to 30 years</span></label>
+      <label class="opt" for="q3d"><input type="radio" name="q3" value="31 years and above" id="q3d"><span>31 years and above</span></label>
+    </div>
+    <div class="err-msg" id="err1">Please answer all questions in this section before continuing.</div>
+  </div>
+
+  <!-- SCREEN 2: SECTION B -->
+  <div class="screen" id="s2">
+    <div class="section-label">Section B</div>
+    <h2 class="screen-title">Awareness of Neurogastroenterology</h2>
+    <p class="screen-intro"><em>Neurogastroenterology is the science of how the gut and the brain communicate with each other and how this affects mood, behaviour and digestion.</em></p>
+
+    <div class="card">
+      <div class="q-text">4. Have you heard of neurogastroenterology before reading the description above?</div>
+      <label class="opt" for="q4a"><input type="radio" name="q4" value="Yes" id="q4a"><span>Yes</span></label>
+      <label class="opt" for="q4b"><input type="radio" name="q4" value="No" id="q4b"><span>No</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">5. Are you aware that the food a person eats can directly affect their mood and emotional state?</div>
+      <label class="opt" for="q5a"><input type="radio" name="q5" value="Yes" id="q5a"><span>Yes</span></label>
+      <label class="opt" for="q5b"><input type="radio" name="q5" value="No" id="q5b"><span>No</span></label>
+      <label class="opt" for="q5c"><input type="radio" name="q5" value="Not sure" id="q5c"><span>Not sure</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">6. Have you heard of the gut-brain axis, the two-way communication pathway between the gut and the brain?</div>
+      <label class="opt" for="q6a"><input type="radio" name="q6" value="Yes" id="q6a"><span>Yes</span></label>
+      <label class="opt" for="q6b"><input type="radio" name="q6" value="No" id="q6b"><span>No</span></label>
+      <label class="opt" for="q6c"><input type="radio" name="q6" value="Not sure" id="q6c"><span>Not sure</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">7. Which of the following do you believe food can influence?</div>
+      <div class="q-hint">Select all that apply</div>
+      <label class="opt" for="q7a"><input type="checkbox" name="q7" value="Physical health" id="q7a"><span>Physical health</span></label>
+      <label class="opt" for="q7b"><input type="checkbox" name="q7" value="Mood and emotions" id="q7b"><span>Mood and emotions</span></label>
+      <label class="opt" for="q7c"><input type="checkbox" name="q7" value="Mental clarity and focus" id="q7c"><span>Mental clarity and focus</span></label>
+      <label class="opt" for="q7d"><input type="checkbox" name="q7" value="Energy levels" id="q7d"><span>Energy levels</span></label>
+      <label class="opt" for="q7e"><input type="checkbox" name="q7" value="None of the above" id="q7e"><span>None of the above</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">8. Were you aware that approximately 90 percent of the body's serotonin, a chemical that regulates mood, is produced in the gut?</div>
+      <label class="opt" for="q8a"><input type="radio" name="q8" value="Yes" id="q8a"><span>Yes</span></label>
+      <label class="opt" for="q8b"><input type="radio" name="q8" value="No" id="q8b"><span>No</span></label>
+      <label class="opt" for="q8c"><input type="radio" name="q8" value="Not sure" id="q8c"><span>Not sure</span></label>
+    </div>
+    <div class="err-msg" id="err2">Please answer all questions in this section before continuing.</div>
+  </div>
+
+  <!-- SCREEN 3: SECTION C -->
+  <div class="screen" id="s3">
+    <div class="section-label">Section C</div>
+    <h2 class="screen-title">Awareness of AI-Driven Mood Detection Technologies</h2>
+    <p class="screen-intro"><em>Computer vision is AI technology that can analyse images and video to identify patterns including human facial expressions and emotions. Affective computing is a branch of AI that enables machines to detect and respond to human emotional states.</em></p>
+
+    <div class="card">
+      <div class="q-text">9. How familiar are you with artificial intelligence (AI) in general?</div>
+      <label class="opt" for="q9a"><input type="radio" name="q9" value="Very familiar" id="q9a"><span>Very familiar</span></label>
+      <label class="opt" for="q9b"><input type="radio" name="q9" value="Somewhat familiar" id="q9b"><span>Somewhat familiar</span></label>
+      <label class="opt" for="q9c"><input type="radio" name="q9" value="Not familiar" id="q9c"><span>Not familiar</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">10. Have you heard of computer vision technology before reading the description above?</div>
+      <label class="opt" for="q10a"><input type="radio" name="q10" value="Yes" id="q10a"><span>Yes</span></label>
+      <label class="opt" for="q10b"><input type="radio" name="q10" value="No" id="q10b"><span>No</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">11. Are you aware that AI systems can detect a person's emotional state from their facial expressions in real time?</div>
+      <label class="opt" for="q11a"><input type="radio" name="q11" value="Yes" id="q11a"><span>Yes</span></label>
+      <label class="opt" for="q11b"><input type="radio" name="q11" value="No" id="q11b"><span>No</span></label>
+      <label class="opt" for="q11c"><input type="radio" name="q11" value="Not sure" id="q11c"><span>Not sure</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">12. Have you ever used or encountered an AI system that recommends food or products based on your health, preferences or behaviour?</div>
+      <label class="opt" for="q12a"><input type="radio" name="q12" value="Yes" id="q12a"><span>Yes -- for example: <input type="text" id="q12ex" placeholder="describe here" style="border:none;border-bottom:1px solid #ccc;padding:2px 6px;font-size:12px;width:200px;outline:none"></span></label>
+      <label class="opt" for="q12b"><input type="radio" name="q12" value="No" id="q12b"><span>No</span></label>
+      <label class="opt" for="q12c"><input type="radio" name="q12" value="Not sure" id="q12c"><span>Not sure</span></label>
+    </div>
+
+    <div class="card">
+      <div class="q-text">13. Are you aware of any hotels or restaurants globally that currently use AI technology in food and beverage operations?</div>
+      <label class="opt" for="q13a"><input type="radio" name="q13" value="Yes" id="q13a"><span>Yes -- for example: <input type="text" id="q13ex" placeholder="describe here" style="border:none;border-bottom:1px solid #ccc;padding:2px 6px;font-size:12px;width:200px;outline:none"></span></label>
+      <label class="opt" for="q13b"><input type="radio" name="q13" value="No" id="q13b"><span>No</span></label>
+      <label class="opt" for="q13c"><input type="radio" name="q13" value="Not sure" id="q13c"><span>Not sure</span></label>
+    </div>
+    <div class="err-msg" id="err3">Please answer all questions in this section before continuing.</div>
+  </div>
+
+  <!-- SCREEN 4: SECTION D -->
+  <div class="screen" id="s4">
+    <div class="section-label">Section D</div>
+    <h2 class="screen-title">Technology Acceptance</h2>
+    <p class="screen-intro"><em>The following statements relate to an AI system installed in a hotel dining room that uses computer vision to detect a guest's emotional state and recommends food from the menu based on what neurogastroenterological science says would best support that guest's mood and wellbeing.</em><br><br>
+    Please select the number that best reflects your level of agreement:<br>
+    <strong>1</strong> = Strongly Disagree &nbsp; <strong>2</strong> = Disagree &nbsp; <strong>3</strong> = Neutral &nbsp; <strong>4</strong> = Agree &nbsp; <strong>5</strong> = Strongly Agree</p>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="likert-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th class="stmt">Statement</th>
+              <th>SD<br>1</th><th>D<br>2</th><th>N<br>3</th><th>A<br>4</th><th>SA<br>5</th>
+            </tr>
+          </thead>
+          <tbody id="likert-tb"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="err-msg" id="err4">Please rate all statements before continuing.</div>
+  </div>
+
+  <!-- SCREEN 5: SECTION E -->
+  <div class="screen" id="s5">
+    <div class="section-label">Section E</div>
+    <h2 class="screen-title">Open-Ended Responses</h2>
+    <p class="screen-intro">Please answer the following two questions in your own words. There is no minimum or maximum length required.</p>
+
+    <div class="card">
+      <div class="q-text">24. In your view, what would be the greatest benefit of an AI system that detects a hotel guest's mood and recommends food based on neurogastroenterological science?</div>
+      <textarea id="q24" placeholder="Write your response here..."></textarea>
+    </div>
+
+    <div class="card">
+      <div class="q-text">25. What is your main concern about AI systems that detect guest emotions being used in hotel dining settings?</div>
+      <textarea id="q25" placeholder="Write your response here..."></textarea>
+    </div>
+    <div class="err-msg" id="err5">Please answer both questions before submitting.</div>
+  </div>
+
+  <!-- SCREEN 6: THANK YOU -->
+  <div class="screen" id="s6">
+    <div class="ty-wrap">
+      <div class="ty-icon">&#10003;</div>
+      <h2>Thank You for Your Participation</h2>
+      <p>Your responses have been recorded and will contribute to original research in the field of AI and hospitality.</p>
+      <p style="margin-top:12px;font-size:13px;color:#888">Brandis Kool &nbsp;|&nbsp; IHTI Nairobi &nbsp;|&nbsp; Unit 18: Research Project &nbsp;|&nbsp; 2025</p>
+      <button class="btn btn-next" style="margin-top:24px;padding:12px 32px" onclick="resetForm()">Submit another response</button>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav" id="nav-bar">
+    <button class="btn btn-back" id="btn-prev" onclick="go(-1)">&#8592; Previous</button>
+    <button class="btn btn-next" id="btn-next" onclick="go(1)">Next &#8594;</button>
+  </div>
+
+</div>
+
+<!-- RESEARCHER DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <div class="dash-hdr">
+    <h3>Researcher Dashboard</h3>
+    <button class="dash-close" onclick="closeDash()">&#215;</button>
+  </div>
+  <div class="dash-body">
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-n" id="d-total">0</div><div class="stat-l">Total responses</div></div>
+      <div class="stat-box"><div class="stat-n" id="d-aware">0%</div><div class="stat-l">Neurogastro aware</div></div>
+      <div class="stat-box"><div class="stat-n" id="d-mean">0.0</div><div class="stat-l">Avg acceptance</div></div>
+    </div>
+    <button class="btn-export" onclick="exportCSV()">&#8659; Export all data as CSV</button>
+    <button class="btn-clear" onclick="clearData()">Clear all responses</button>
+    <div class="dash-section">Recent Responses</div>
+    <div id="d-responses"><p style="font-size:13px;color:#888;text-align:center;padding:16px">No responses yet.</p></div>
+  </div>
+</div>
+
+<script>
+const LIKERT = [
+  ['q14','An AI system that detects a guest\'s mood and recommends food accordingly would improve the hotel dining experience.'],
+  ['q15','I would be comfortable working with an AI mood detection system in a hotel food and beverage setting.'],
+  ['q16','I believe AI-driven food recommendation based on neurogastroenterological science would benefit hotel guests.'],
+  ['q17','An AI mood detection and food recommendation system is a good idea for the future of hospitality in Nairobi.'],
+  ['q18','I think hotel guests in Nairobi would accept AI systems that monitor their emotional state to recommend food.'],
+  ['q19','I would recommend implementing AI mood-based food recommendation in a hotel I work for in the future.'],
+  ['q20','I believe the benefits of AI mood-based food recommendation in hotels outweigh the privacy concerns.'],
+  ['q21','I think AI mood detection systems would be practical to integrate into existing hotel dining operations.'],
+  ['q22','I feel confident that I could learn to work alongside AI mood detection and food recommendation technology.'],
+  ['q23','I believe Nairobi\'s hotel industry will adopt AI mood-based food recommendation systems within the next ten years.']
+];
+
+const LABELS = [
+  'Participant Information','Section A: Demographics',
+  'Section B: Neurogastroenterology','Section C: AI Awareness',
+  'Section D: Technology Acceptance','Section E: Open Responses','Complete'
+];
+
+let cur = 0;
+const TOTAL = 7;
+const STORAGE_KEY = 'ihti_research_responses';
+
+// Build likert table
+(function(){
+  const tb = document.getElementById('likert-tb');
+  LIKERT.forEach(([id, txt], i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="stmt">${i+14}. ${txt}</td>` +
+      [1,2,3,4,5].map(v =>
+        `<td><input type="radio" name="${id}" value="${v}" aria-label="Q${i+14} score ${v}"></td>`
+      ).join('');
+    tb.appendChild(tr);
+  });
+})();
+
+function updateUI() {
+  document.querySelectorAll('.screen').forEach((s,i) =>
+    s.classList.toggle('active', i === cur));
+  const pct = Math.round(((cur + 1) / TOTAL) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = LABELS[cur];
+  document.getElementById('prog-count').textContent = `Step ${cur+1} of ${TOTAL}`;
+  const nav = document.getElementById('nav-bar');
+  const prev = document.getElementById('btn-prev');
+  const next = document.getElementById('btn-next');
+  if (cur === TOTAL - 1) { nav.style.display = 'none'; return; }
+  nav.style.display = 'flex';
+  prev.style.visibility = cur === 0 ? 'hidden' : 'visible';
+  next.textContent = cur === TOTAL - 2 ? 'Submit' : 'Next \u2192';
+}
+
+function validate() {
+  const hide = id => document.getElementById(id).classList.remove('show');
+  const show = id => document.getElementById(id).classList.add('show');
+  if (cur === 0) {
+    if (!document.getElementById('consent').checked) { show('err0'); return false; }
+    hide('err0'); return true;
+  }
+  if (cur === 1) {
+    const ok = ['q1','q2','q3'].every(n => document.querySelector(`[name="${n}"]:checked`));
+    ok ? hide('err1') : show('err1'); return ok;
+  }
+  if (cur === 2) {
+    const radios = ['q4','q5','q6','q8'].every(n => document.querySelector(`[name="${n}"]:checked`));
+    const checks = document.querySelector('[name="q7"]:checked');
+    const ok = radios && checks;
+    ok ? hide('err2') : show('err2'); return ok;
+  }
+  if (cur === 3) {
+    const ok = ['q9','q10','q11','q12','q13'].every(n => document.querySelector(`[name="${n}"]:checked`));
+    ok ? hide('err3') : show('err3'); return ok;
+  }
+  if (cur === 4) {
+    const ok = LIKERT.every(([id]) => document.querySelector(`[name="${id}"]:checked`));
+    ok ? hide('err4') : show('err4'); return ok;
+  }
+  if (cur === 5) {
+    const ok = document.getElementById('q24').value.trim() && document.getElementById('q25').value.trim();
+    ok ? hide('err5') : show('err5'); return ok;
+  }
+  return true;
+}
+
+function collectResponse() {
+  const d = { timestamp: new Date().toISOString() };
+  ['q1','q2','q3','q4','q5','q6','q8','q9','q10','q11','q12','q13'].forEach(n => {
+    const el = document.querySelector(`[name="${n}"]:checked`);
+    d[n] = el ? el.value : '';
+  });
+  d['q7'] = [...document.querySelectorAll('[name="q7"]:checked')].map(e => e.value).join('; ');
+  const ex12 = document.getElementById('q12ex').value.trim();
+  if (ex12) d['q12_example'] = ex12;
+  const ex13 = document.getElementById('q13ex').value.trim();
+  if (ex13) d['q13_example'] = ex13;
+  LIKERT.forEach(([id]) => {
+    const el = document.querySelector(`[name="${id}"]:checked`);
+    d[id] = el ? parseInt(el.value) : '';
+  });
+  d['q24'] = document.getElementById('q24').value.trim();
+  d['q25'] = document.getElementById('q25').value.trim();
+  return d;
+}
+
+function saveResponse() {
+  const responses = getAll();
+  responses.push(collectResponse());
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+}
+
+function getAll() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+
+function go(dir) {
+  if (dir === 1 && !validate()) return;
+  if (dir === 1 && cur === TOTAL - 2) { saveResponse(); }
+  cur = Math.max(0, Math.min(TOTAL - 1, cur + dir));
+  updateUI();
+  window.scrollTo(0, 0);
+}
+
+function resetForm() {
+  document.querySelectorAll('input[type=radio], input[type=checkbox]').forEach(el => el.checked = false);
+  document.querySelectorAll('textarea').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=text]').forEach(el => el.value = '');
+  cur = 0;
+  updateUI();
+  document.getElementById('nav-bar').style.display = 'flex';
+}
+
+function openDash() {
+  document.getElementById('dashboard').classList.add('open');
+  loadDash();
+}
+
+function closeDash() {
+  document.getElementById('dashboard').classList.remove('open');
+}
+
+function loadDash() {
+  const all = getAll();
+  document.getElementById('d-total').textContent = all.length;
+  if (!all.length) {
+    document.getElementById('d-responses').innerHTML =
+      '<p style="font-size:13px;color:#888;text-align:center;padding:16px">No responses yet.</p>';
+    document.getElementById('d-aware').textContent = '0%';
+    document.getElementById('d-mean').textContent = '0.0';
+    return;
+  }
+  const aware = all.filter(r => r.q4 === 'Yes').length;
+  document.getElementById('d-aware').textContent = Math.round((aware/all.length)*100) + '%';
+  const lKeys = LIKERT.map(([id]) => id);
+  const means = all.map(r => {
+    const vals = lKeys.map(k => parseInt(r[k]) || 0);
+    return vals.reduce((a,b) => a+b, 0) / vals.length;
+  });
+  const overall = means.reduce((a,b) => a+b, 0) / means.length;
+  document.getElementById('d-mean').textContent = overall.toFixed(1) + ' / 5';
+  const recent = all.slice(-5).reverse();
+  document.getElementById('d-responses').innerHTML = recent.map((r, i) => {
+    const avg = (lKeys.map(k => parseInt(r[k])||0).reduce((a,b)=>a+b,0)/lKeys.length).toFixed(1);
+    return `<div class="resp-card">
+      <strong>Response #${all.length - i}</strong> &nbsp; ${new Date(r.timestamp).toLocaleString()}<br>
+      Programme: ${r.q1||'n/a'} &nbsp;|&nbsp; Year: ${r.q2||'n/a'} &nbsp;|&nbsp; Age: ${r.q3||'n/a'}<br>
+      Neurogastro aware: <strong>${r.q4||'n/a'}</strong> &nbsp;|&nbsp; Avg acceptance: <strong>${avg}/5</strong>
+    </div>`;
+  }).join('') + (all.length > 5
+    ? `<p style="font-size:12px;color:#888;text-align:center;margin-top:8px">Showing 5 most recent of ${all.length} total</p>` : '');
+}
+
+function exportCSV() {
+  const all = getAll();
+  if (!all.length) { alert('No responses to export yet.'); return; }
+  const headers = [...new Set(all.flatMap(r => Object.keys(r)))];
+  const rows = all.map(r =>
+    headers.map(h => '"' + String(r[h] || '').replace(/"/g, '""') + '"').join(',')
+  );
+  const csv = [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'IHTI_Research_Responses_2025.csv';
+  a.click();
+}
+
+function clearData() {
+  if (confirm('This will permanently delete all ' + getAll().length + ' stored responses. Are you sure?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    loadDash();
+  }
+}
+
+updateUI();
+</script>
+</body>
+</html>
